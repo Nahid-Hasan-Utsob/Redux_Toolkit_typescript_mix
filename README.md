@@ -107,3 +107,75 @@ Header.tsx
 Shop Name + Home link
 Cart count show
 Click on cart → navigate /cart
+<Link to="/cart">Cart: {count} item{count !== 1 ? 's' : ''}</Link>
+
+
+
+Cart.tsx
+******************************************
+Features:
+Show all cart items
+Increase / Decrease quantity (minimum 1)
+Delete individual item
+Total price
+Place order → clears cart
+Local Storage synced: reload e data safe
+Code snippet:
+
+<button onClick={() => dispatch(increaseQuantity(item.id))}>+</button>
+<button onClick={() => dispatch(decreaseQuantity(item.id))}>-</button>
+<button onClick={() => dispatch(removeFromCart(item.id))}>Delete</button>
+
+
+
+React Router Setup (App.tsx)
+************************************************
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/shop" element={<Shop />} />
+  <Route path="/product/:id" element={<ProductDetails />} />
+  <Route path="/cart" element={<Cart />} />
+</Routes>
+/ → Home page
+/shop → Shop page
+/product/:id → Product detail
+/cart → Cart page
+
+TypeScript
+******************************
+Strong typing
+Interfaces: CartItem, CartState, Product
+Ensures type safety throughout app
+
+interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  quantity: number;
+}
+
+
+Local Storage
+************************************
+Cart state update hole auto sync
+Refresh e cart persist
+Place order e cart clear
+
+Next Steps / Improvements
+************************************************
+Add search bar
+Add category + price filter simultaneously
+Add mini-cart dropdown in header
+Use React Query mutation for real API
+
+
+Conclusion
+************************************************
+Project structure clear + scalable
+Redux Toolkit for state + localStorage
+React Query for async data fetch
+TypeScript for type safety
+Professional step-by-step modular design
+
+
+
