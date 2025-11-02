@@ -11,7 +11,11 @@ import { addToCart } from '../features/cart/cartSlice';
 
 const ProductDetails: React.FC = () => {
 const { id } = useParams<{ id: string }>();
-const { data, isLoading } = useQuery(['product', id], () => fetchProductById(id!));
+const { data, isLoading } = useQuery({
+  queryKey: ['product', id],
+  queryFn: () => fetchProductById(id!),  // arrow function jodi id pass korte hoy
+});
+
 const dispatch = useDispatch();
 
 

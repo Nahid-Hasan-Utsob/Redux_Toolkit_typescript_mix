@@ -10,7 +10,11 @@ import CategoryList from '../components/CategoryList';
 
 
 const Shop: React.FC = () => {
-const { data } = useQuery(['products'], fetchProducts);
+const { data } = useQuery({
+  queryKey: ['products'],   // object property
+  queryFn: fetchProducts,   // object property
+});
+
 const [selected, setSelected] = useState<string | null>(null);
 
 

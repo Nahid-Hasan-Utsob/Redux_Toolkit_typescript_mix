@@ -8,7 +8,11 @@ import ProductCard from '../components/ProductCard';
 
 
 const Home: React.FC = () => {
-const { data, isLoading, isError } = useQuery(['products'], fetchProducts);
+const { data, isLoading, isError } = useQuery({
+  queryKey: ['products'],
+  queryFn: fetchProducts,
+});
+
 
 
 if (isLoading) return <div>Loading...</div>;
