@@ -1,16 +1,13 @@
-// React Query use korar jonno data fetch wrapper.
-// Ekhane async function return kore local products array - real API er moto behave korbe.
-import { products, type Product } from '../data/products';
-
+import type { Product } from '../data/products';
 
 export const fetchProducts = async (): Promise<Product[]> => {
-// React Query expects a promise - ekhane 300ms delay diya simulate korechi.
-await new Promise((res) => setTimeout(res, 300));
-return products;
+  const res = await fetch('https://fakestoreapi.com/products'); // real API
+  if (!res.ok) throw new Error('Network response was not ok');
+  return res.json();
 };
 
-
-export const fetchProductById = async (id: string): Promise<Product | undefined> => {
-await new Promise((res) => setTimeout(res, 200));
-return products.find((p) => p.id === id);
+export const fetchProductById = async (id: string): Promise<Product> => {
+  const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+  if (!res.ok) throw new Error('Product not found');
+  return res.json();
 };
