@@ -4,6 +4,7 @@ import Header from '../src/components/Header';
 import Home from '../src/pages/Home';
 import Shop from '../src/pages/Shop';
 import ProductDetails from '../src/pages/ProductDetails';
+import Cart from './features/cart/Cart';
 
 
 // App.tsx: React Router DOM diye routing define kora hocche.
@@ -16,6 +17,7 @@ return (
 <Route path="/" element={<Home />} />
 <Route path="/shop" element={<Shop />} />
 <Route path="/product/:id" element={<ProductDetails />} />
+<Route path="/cart" element={<Cart></Cart>} />
 </Routes>
 </main>
 </div>
