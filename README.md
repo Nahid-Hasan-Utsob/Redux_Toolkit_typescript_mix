@@ -1,73 +1,109 @@
-# React + TypeScript + Vite
+# 🛍️ My Shop - React + Redux Toolkit + React Query + TypeScript
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
+এই project টি একটি ছোট e-commerce shop এর simulation।  
+React, TypeScript, Redux Toolkit এবং React Query ব্যবহার করে বানানো হয়েছে।  
+Main features:
 
-Currently, two official plugins are available:
+- Home page: সব product দেখাবে
+- Shop page: category filter + sorting support
+- Product details page: একেক product এর details
+- Cart: add, quantity increase/decrease, delete, total price
+- Local Storage support: page reload e cart persist হবে
+- Place order button: cart clear করবে
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🏗 Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+📦src
+ ┣ 📂api
+ ┃ ┣ 📜apiType.ts
+ ┃ ┗ 📜productsApi.ts
+ ┣ 📂assets
+ ┃ ┗ 📜react.svg
+ ┣ 📂components
+ ┃ ┣ 📜CategoryList.tsx
+ ┃ ┣ 📜Header.tsx
+ ┃ ┗ 📜ProductCard.tsx
+ ┣ 📂data
+ ┣ 📂features
+ ┃ ┗ 📂cart
+ ┃ ┃ ┣ 📜Cart.tsx
+ ┃ ┃ ┣ 📜cartSelectors.ts
+ ┃ ┃ ┗ 📜cartSlice.ts
+ ┣ 📂pages
+ ┃ ┣ 📜Home.tsx
+ ┃ ┣ 📜ProductDetails.tsx
+ ┃ ┗ 📜Shop.tsx
+ ┣ 📜App.css
+ ┣ 📜App.tsx
+ ┣ 📜index.css
+ ┣ 📜main.tsx
+ ┗ 📜store.ts
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## ⚡ Step-by-Step Explanation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 1️⃣ Redux Toolkit (cartSlice.ts)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Purpose:** Cart state manage করা + local storage persist
+- **Key points:**
+  - `initialState` → localStorage থেকে load হবে, না থাকলে empty array
+  - `addToCart` → duplicate prevent, initial quantity 1
+  - `increaseQuantity` / `decreaseQuantity` → 1 এর নিচে quantity যাবে না
+  - `removeFromCart` → single item delete
+  - `clearCart` → place order e call হয়
+- **Local Storage:** সব update এর পর sync হয়, page reload e state lose হয় না
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**Example snippet:**
+```ts
+const exists = state.items.find(item => item.id === action.payload.id);
+if (!exists) state.items.push({ ...action.payload, quantity: 1 });
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+
+
+
+Cart Selectors (cartSelectors.ts)
+*******************************************
+Purpose: Cart state থেকে derived data nite
+Selectors:
+selectCartItems → sob cart items
+selectCartCount → total items quantity
+selectCartTotal → total price
+Safe access: Optional chaining + fallback value
+
+export const selectCartCount = (state: RootState) =>
+  state.cart?.items?.reduce((s, it) => s + it.quantity, 0) || 0;
+
+
+React Query (Home.tsx, Shop.tsx, ProductDetails.tsx)
+*********************************************************
+Purpose: API call / data fetch handle করা
+Key points:
+useQuery(['products'], fetchProducts) → fetch all products
+useQuery(['product', id], () => fetchProductById(id)) → single product
+isLoading / isError handle করা
+React Query Benefits: caching, background fetching, auto re-fetch
+
+
+Components
+*********************************************
+ProductCard.tsx
+Product display + Add to Cart button
+dispatch(addToCart(...)) call করে Redux update করে
+CategoryList.tsx
+Left side category filter
+Click → parent page e selected category update
+Sorting support:
+
+const sortedCategories = [...categories].sort();
+
+
+Header.tsx
+Shop Name + Home link
+Cart count show
+Click on cart → navigate /cart
