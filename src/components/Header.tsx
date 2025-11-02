@@ -20,6 +20,9 @@ return (
 <Link to="/shop" style={{ textDecoration: 'none', color: 'black' }}>
 <h2>My Shop</h2>
 </Link>
+<Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
+<h2>Home</h2>
+</Link>
 </div>
 
 
