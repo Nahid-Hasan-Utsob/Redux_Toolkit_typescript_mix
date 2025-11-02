@@ -1,79 +1,85 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { fetchProducts } from '../api/productsApi';
 import ProductCard from '../components/ProductCard';
 import CategoryList from '../components/CategoryList';
 
-// Shop page: left side category list, right side filtered + sorted product list
-
 const Shop: React.FC = () => {
-  // 🔹 Category select state
-  const [selected, setSelected] = useState<string | null>(null);
-  
-  // 🔹 Sort option state
-  const [sortOption, setSortOption] = useState<string>('Price: Low to High');
+  // 🔹 Fetch products from API
 
-  // 🔹 Fetch products from API using React Query
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['products'],
-    queryFn: fetchProducts,
-  });
 
-  if (isLoading) return <div>Loading products...</div>;
-  if (isError) return <div>Error loading products</div>;
+const { data } = useQuery({
+  queryKey: ['products'],  // 🔹 array of key
+  queryFn: fetchProducts,   // 🔹 function to fetch data
+});
 
-  // 🔹 Extract unique categories from data
+
+  // 🔹 URL query params for category + sort
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCategory = searchParams.get('category') || null;
+  const selectedSort = searchParams.get('sort') || 'Price: Low to High';
+
+  // 🔹 Get categories sorted alphabetically
   const categories = useMemo(() => {
     if (!data) return [] as string[];
-    return Array.from(new Set(data.map((p) => p.category)));
+    return Array.from(new Set(data.map((p) => p.category))).sort((a, b) => a.localeCompare(b));
   }, [data]);
 
-  // 🔹 Filter products by selected category + apply sorting
+  // 🔹 Filter products by category
   const filtered = useMemo(() => {
     if (!data) return [];
+    return selectedCategory ? data.filter(p => p.category === selectedCategory) : data;
+  }, [data, selectedCategory]);
 
-    // 1️⃣ Filter by category
-    let result = selected ? data.filter(p => p.category === selected) : data;
-
-    // 2️⃣ Apply sorting
-    switch (sortOption) {
+  // 🔹 Sort products based on selectedSort
+  const sortedProducts = useMemo(() => {
+    const products = [...filtered];
+    switch (selectedSort) {
       case 'Price: Low to High':
-        result = result.slice().sort((a, b) => a.price - b.price);
-        break;
+        return products.sort((a, b) => a.price - b.price);
       case 'Price: High to Low':
-        result = result.slice().sort((a, b) => b.price - a.price);
-        break;
+        return products.sort((a, b) => b.price - a.price);
       case 'Name: A-Z':
-        result = result.slice().sort((a, b) => a.title.localeCompare(b.title));
-        break;
+        return products.sort((a, b) => a.title.localeCompare(b.title));
       case 'Name: Z-A':
-        result = result.slice().sort((a, b) => b.title.localeCompare(a.title));
-        break;
+        return products.sort((a, b) => b.title.localeCompare(a.title));
       default:
-        break;
+        return products;
     }
+  }, [filtered, selectedSort]);
 
-    return result;
-  }, [data, selected, sortOption]);
+  // 🔹 Handle category change
+  const handleCategoryChange = (category: string | null) => {
+    if (category) searchParams.set('category', category);
+    else searchParams.delete('category');
+    setSearchParams(searchParams);
+  };
+
+  // 🔹 Handle sort change
+  const handleSortChange = (sort: string) => {
+    searchParams.set('sort', sort);
+    setSearchParams(searchParams);
+  };
 
   return (
     <div style={{ display: 'flex', gap: 20 }}>
-      {/* 🔹 Left side: Category + Sorting component */}
+      {/* 🔹 Left: Category + Sort */}
       <aside style={{ width: 200 }}>
         <CategoryList
           categories={categories}
-          selected={selected}
-          onSelect={setSelected} // 🔹 update selected category
-          sortOption={sortOption}
-          onSortChange={setSortOption} // 🔹 update selected sort
+          selected={selectedCategory}
+          onSelect={handleCategoryChange}
+          sortOption={selectedSort}
+          onSortChange={handleSortChange}
         />
       </aside>
 
-      {/* 🔹 Right side: Product cards */}
+      {/* 🔹 Right: Product List */}
       <section style={{ flex: 1 }}>
-        <h2>{selected ? `${selected} Products` : 'All Products'}</h2>
+        <h2>{selectedCategory ? `${selectedCategory} Products` : 'All Products'}</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          {filtered.map((p) => (
+          {sortedProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
