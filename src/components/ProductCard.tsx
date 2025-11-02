@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../features/cart/cartSlice';
-import type { Product } from '../data/products';
+import type { Product } from '../api/apiType';
 
 
 // ProductCard: ekta product card component. TypeScript props interface use kora.
