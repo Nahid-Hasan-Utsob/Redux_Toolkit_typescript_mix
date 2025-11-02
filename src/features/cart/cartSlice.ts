@@ -1,6 +1,6 @@
 // Redux Toolkit slice: ekhane cart state manage hobe.
 // Banglish comment: "Ekhane Redux Toolkit use korchi - cart add/remove/clear er jonno"
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 
 export interface CartItem {

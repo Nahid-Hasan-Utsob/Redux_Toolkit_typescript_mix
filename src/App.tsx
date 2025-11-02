@@ -1,9 +1,9 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Home from './pages/Home';
-import Shop from './pages/Shop';
-import ProductDetails from './pages/ProductDetails';
+import Header from '../src/components/Header';
+import Home from '../src/pages/Home';
+import Shop from '../src/pages/Shop';
+import ProductDetails from '../src/pages/ProductDetails';
 
 
 // App.tsx: React Router DOM diye routing define kora hocche.
